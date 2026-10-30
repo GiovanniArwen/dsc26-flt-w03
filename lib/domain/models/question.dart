@@ -12,11 +12,43 @@ final class Question {
   final String stem;
   final List<String> choices;
 
-  /// Reads one question from the API. Unknown fields are ignored.
-  ///
-  /// TODO(W3): throw a FormatException for a missing or wrongly typed field,
-  /// or when `choices` is not a list of 2 to 6 non-empty strings.
   factory Question.fromJson(Map<String, Object?> json) {
-    throw UnimplementedError('Question.fromJson');
+    final id = json['id'];
+    final skillId = json['skillId'];
+    final stem = json['stem'];
+    final choices = json['choices'];
+
+    if (id is! String || id.trim().isEmpty) {
+      throw const FormatException('Invalid question id');
+    }
+
+    if (skillId is! String || skillId.trim().isEmpty) {
+      throw const FormatException('Invalid skillId');
+    }
+
+    if (stem is! String || stem.trim().isEmpty) {
+      throw const FormatException('Invalid question stem');
+    }
+
+    if (choices is! List || choices.length < 2 || choices.length > 6) {
+      throw const FormatException('Invalid question choices');
+    }
+
+    final parsedChoices = <String>[];
+
+    for (final choice in choices) {
+      if (choice is! String || choice.trim().isEmpty) {
+        throw const FormatException('Invalid choice');
+      }
+
+      parsedChoices.add(choice);
+    }
+
+    return Question(
+      id: id,
+      skillId: skillId,
+      stem: stem,
+      choices: List.unmodifiable(parsedChoices),
+    );
   }
 }
